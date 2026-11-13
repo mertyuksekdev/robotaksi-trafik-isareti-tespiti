@@ -1,0 +1,30 @@
+# Veri seti: "parkur" v7 (Roboflow Universe, CC BY 4.0)
+# https://universe.roboflow.com/minaws-ttilh/parkur-ilbm7/dataset/7
+# Veri setini YOLOv8 formatında indirip bu klasörün yanına "datasets/parkur" olarak çıkarın.
+
+path: datasets/parkur
+train: train/images
+val: valid/images
+test: test/images
+
+nc: 19
+names:
+  - donel_kavsak
+  - durak
+  - gidis_donus
+  - girisi_olmayan_yol
+  - ileri_mecburi
+  - ileri_sag_mecburi
+  - ileri_sol_mecburi
+  - ileriden_saga
+  - ileriden_sola
+  - lamba_kirmizi
+  - lamba_sari
+  - lamba_yesil
+  - park_edilebilir
+  - park_engelli
+  - park_yasak
+  - sag_mecburi
+  - saga_donulmez
+  - sol_mecburi
+  - sola_donulmez

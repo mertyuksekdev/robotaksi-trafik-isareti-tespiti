@@ -1,0 +1,13 @@
+# Veri seti ve eğitim çıktıları depoya eklenmez
+datasets/
+runs/
+*.pt
+*.mp4
+*.zip
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.ipynb_checkpoints/
