@@ -1,0 +1,5 @@
+# Raspberry Pi ve diğer uç cihazlar için: PyTorch / Ultralytics gerekmez.
+onnxruntime>=1.16
+opencv-python>=4.8   # ekransız cihazda opencv-python-headless yeterli
+numpy>=1.24
+pyyaml>=6.0

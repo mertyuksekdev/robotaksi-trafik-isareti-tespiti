@@ -62,13 +62,65 @@ python detect.py --weights runs/robotaksi/weights/best.pt --source parkur.mp4
 python detect.py --weights runs/robotaksi/weights/best.pt --source 0
 ```
 
+## Uç cihazda çalıştırma (ONNX)
+
+Model, Raspberry Pi gibi GPU'su olmayan cihazlarda çalışsın diye ONNX biçimine aktarılır.
+Uç cihazda PyTorch ve Ultralytics gerekmez. Çıkarım yalnızca ONNX Runtime, NumPy ve OpenCV ile yapılır ([`edge/yolo_onnx.py`](edge/yolo_onnx.py)).
+
+**1. PC'de modeli aktar ve doğruluğu kontrol et:**
+
+```bash
+python export.py --weights runs/robotaksi/weights/best.pt --val              # 640 px
+python export.py --weights runs/robotaksi/weights/best.pt --imgsz 320 --val  # daha hızlı, 320 px
+```
+
+**2. Uç cihazda kur ve çalıştır:**
+
+```bash
+pip install -r requirements-edge.txt
+python edge/detect_onnx.py --model best.onnx --source parkur.mp4
+python edge/detect_onnx.py --model best.onnx --source 0 --headless   # ekransız cihaz
+```
+
+**3. Hızı ölç:** Ön işleme, çıkarım ve son işleme süreleri ayrı ayrı ölçülür ve sonuç CSV'ye eklenir.
+
+```bash
+python edge/benchmark.py --model best.onnx --images datasets/parkur/valid/images \
+    --device "Raspberry Pi 5" --csv results/edge_benchmark.csv
+```
+
+### Ölçüm sonuçları
+
+Ölçümler devam ediyor. Sonuçlar `results/edge_benchmark.csv` dosyasına eklendikçe bu tablo güncellenecek.
+
+| Cihaz | Biçim | Giriş | mAP@0.5 | Çıkarım (ms) | FPS |
+| --- | --- | --- | --- | --- | --- |
+| RTX 4060 (PyTorch) | .pt | 640 | 0,960 | | |
+| PC işlemcisi | ONNX | 640 | | | |
+| PC işlemcisi | ONNX | 320 | | | |
+
+### Testler
+
+Ön ve son işleme adımları (letterbox, kutu koordinatlarının geri çevrilmesi, NMS) model gerektirmeyen birim testlerle doğrulanır:
+
+```bash
+python -m pytest tests/
+```
+
 ## Proje yapısı
 
 ```
 ├── data.yaml          # Veri seti yolları ve 19 sınıf
 ├── train.py           # Eğitim
 ├── detect.py          # Video / kamera üzerinde tespit + FPS ölçümü
+├── export.py          # ONNX / NCNN'e aktarma ve doğruluk kontrolü
+├── edge/
+│   ├── yolo_onnx.py   # PyTorch'suz ONNX çıkarımı (ön/son işleme, NMS)
+│   ├── detect_onnx.py # Uç cihazda video / kamera üzerinde tespit
+│   └── benchmark.py   # Hız ölçümü, sonuçları CSV'ye ekler
+├── tests/             # Ön ve son işleme birim testleri
 ├── requirements.txt
+├── requirements-edge.txt
 ├── assets/results.png # Eğitim eğrileri
 └── results/results.csv
 ```
@@ -77,7 +129,8 @@ python detect.py --weights runs/robotaksi/weights/best.pt --source 0
 
 - Parkurdan kendi görüntülerimi toplayıp etiketleyerek veri setini genişletmek
 - YOLOv8s ile YOLOv8n arasındaki hız/doğruluk farkını Jetson gibi gömülü bir donanımda ölçmek
-- Modeli TensorRT ya da ONNX'e aktararak çıkarım hızını artırmak
+- ~~Modeli ONNX'e aktarmak~~ (yapıldı, bkz. *Uç cihazda çalıştırma*)
+- Jetson üzerinde TensorRT ile ONNX Runtime arasındaki hız farkını ölçmek
 
 ## Kaynaklar ve lisans
 
